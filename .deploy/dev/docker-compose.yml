@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  prometheus:
+    image: "prom/prometheus:v2.24.0"
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    volumes:
+      - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+
+  grafana:
+    image: "grafana/grafana:5.4.3"
+    ports:
+      - "7001:3000"
+    volumes:
+      - "../../tmp/.deploy/grafana:/var/lib/grafana:cached"

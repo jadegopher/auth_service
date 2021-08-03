@@ -1,0 +1,7 @@
+scrape_configs:
+  - job_name: client
+    scrape_interval: 15s
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - 192.168.0.2:2112

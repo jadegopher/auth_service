@@ -1,0 +1,33 @@
+syntax = "proto3";
+package auth;
+import "google/api/annotations.proto";
+option go_package = "./proto";
+
+service AuthService {
+  rpc RegisterGuestAccount (RegisterGuestAccountRequest) returns (RegisterGuestAccountResponse) {
+    option (google.api.http) = {
+      post: "/auth/register/guest"
+    };
+  }
+  rpc CheckToken (CheckTokenRequest) returns (CheckTokenResponse) {
+    option (google.api.http) = {
+      get: "/auth/check/token/{token}"
+    };
+  }
+}
+
+message RegisterGuestAccountRequest {
+  string name = 1;
+}
+
+message RegisterGuestAccountResponse {
+  string token = 1;
+}
+
+message CheckTokenRequest {
+  string token = 1;
+}
+
+message CheckTokenResponse {
+  string token = 1;
+}
