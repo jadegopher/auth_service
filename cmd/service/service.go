@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	rsaPrivateKey = "RSA_PRIVATE_KEY"
+	rsaPrivateKey = "RSA PRIVATE KEY"
 )
 
 type handler struct {

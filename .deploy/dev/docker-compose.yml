@@ -1,6 +1,28 @@
-version: "3.8"
+version: '3.8'
 
 services:
+  consul:
+    image: consul:latest
+    restart: on-failure
+    networks:
+      - lan
+    ports:
+      - '8500:8500'
+      - '8600:8600/tcp'
+      - '8600:8600/udp'
+  postgres:
+    image: postgres:latest
+    restart: on-failure
+    networks:
+      - lan
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: admin
+    volumes:
+      - "./pg_data:/var/lib/postgresql/data/"
   prometheus:
     image: "prom/prometheus:v2.24.0"
     ports:
@@ -9,10 +31,19 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
     volumes:
       - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
-
   grafana:
-    image: "grafana/grafana:5.4.3"
+    image: "grafana/grafana"
+    networks:
+      - lan
     ports:
-      - "7001:3000"
+      - "3000:3000"
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    restart: on-failure
     volumes:
-      - "../../tmp/.deploy/grafana:/var/lib/grafana:cached"
+      - "./tmp/build/grafana:/var/lib/grafana:cached"
+
+networks:
+  lan:
