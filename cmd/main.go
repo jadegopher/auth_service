@@ -1,12 +1,13 @@
 package main
 
 import (
-	"auth/cmd/db/postgresql"
-	"auth/cmd/db/postgresql/users"
-	rDB "auth/cmd/db/redis"
-	"auth/cmd/db/redis/sessions"
-	"auth/cmd/model"
-	"auth/cmd/service"
+	"auth/internal/adapters/handlers"
+	"auth/internal/entities"
+	"auth/internal/infrastructure/db/postgresql"
+	"auth/internal/infrastructure/db/postgresql/users"
+	rDB "auth/internal/infrastructure/db/redis"
+	"auth/internal/infrastructure/db/redis/sessions"
+	"auth/internal/service"
 	"auth/proto"
 	"context"
 	"database/sql"
@@ -31,7 +32,7 @@ func main() {
 		panic(err)
 	}
 
-	pConn, err := postgresql.NewConnection(model.Database{
+	pConn, err := postgresql.NewConnection(entities.Database{
 		IP:       "127.0.0.1",
 		Port:     "5432",
 		Name:     "postgres",
@@ -44,7 +45,7 @@ func main() {
 	}
 	defer closeConn(logger, pConn, "postgres")
 
-	rConn, err := rDB.NewConnection(model.Database{
+	rConn, err := rDB.NewConnection(entities.Database{
 		IP:   "0.0.0.0",
 		Port: "6379",
 	})
@@ -81,11 +82,12 @@ func run(
 	rConn *redis.Client,
 	server *http.Server,
 ) (err error) {
-	micro := service.New(logger, users.New(pConn), sessions.New(rConn))
+	authService := service.New(logger, users.New(pConn), sessions.New(rConn))
+	handler := handlers.New(authService)
 	mux := runtime.NewServeMux()
 	server.Handler = mux
 
-	if err = proto.RegisterAuthServiceHandlerServer(ctx, mux, micro); err != nil {
+	if err = proto.RegisterAuthServiceHandlerServer(ctx, mux, handler); err != nil {
 		logger.Error("Error proto.RegisterAuthServiceHandlerServer", zap.Error(err))
 		return err
 	}

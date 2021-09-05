@@ -1,4 +1,4 @@
-package model
+package entities
 
 type Database struct {
 	IP       string `json:"ip"`

@@ -1,7 +1,8 @@
 package users
 
 import (
-	"auth/cmd/db"
+	"auth/internal/entities"
+	"auth/internal/infrastructure/db"
 	"context"
 	"database/sql"
 )
@@ -10,7 +11,7 @@ type userService struct {
 	conn *sql.DB
 }
 
-func New(conn *sql.DB) db.IUsers {
+func New(conn *sql.DB) entities.IUsers {
 	return &userService{conn: conn}
 }
 
@@ -25,13 +26,13 @@ func (u *userService) Insert(ctx context.Context, name string, password string) 
 	return userID, nil
 }
 
-func (u *userService) SelectByUserID(ctx context.Context, userID int64) (_ *db.User, err error) {
+func (u *userService) SelectByUserID(ctx context.Context, userID int64) (_ *entities.User, err error) {
 	querySelect := `
 		SELECT id, name, password, created_at, updated_at
 		FROM users
 		WHERE id = $1;
 	`
-	user := &db.User{}
+	user := &entities.User{}
 	if err = u.conn.QueryRowContext(ctx, querySelect, userID).Scan(
 		&user.ID,
 		&user.Name,
