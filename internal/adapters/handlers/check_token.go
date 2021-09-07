@@ -11,11 +11,16 @@ func (h *handlers) CheckToken(
 	ctx context.Context,
 	req *proto.CheckTokenRequest,
 ) (_ *proto.CheckTokenResponse, err error) {
-	if err = h.authService.CheckToken(ctx, req.Token); err != nil {
-		if err != service.ErrTokenExpired || err != service.ErrInvalidToken || err != service.ErrAccountNotFound {
-			return nil, ErrInternalServer
+	ok, err := h.authService.CheckToken(ctx, req.Token)
+	if err != nil {
+		if err == service.ErrAccountNotFound {
+			return nil, err
 		}
-		return nil, err
+		return nil, ErrInternalServer
+	}
+
+	if !ok {
+
 	}
 
 	// TODO: refresh token

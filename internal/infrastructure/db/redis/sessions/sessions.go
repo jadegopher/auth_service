@@ -1,7 +1,6 @@
 package sessions
 
 import (
-	"auth/internal/entities"
 	"auth/internal/infrastructure/db"
 	"github.com/go-redis/redis"
 	"strconv"
@@ -12,7 +11,7 @@ type sessionService struct {
 	client *redis.Client
 }
 
-func New(client *redis.Client) entities.ISessions {
+func New(client *redis.Client) *sessionService {
 	return &sessionService{client: client}
 }
 

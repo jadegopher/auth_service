@@ -1,12 +1,13 @@
 module auth
 
-go 1.15
+go 1.16
 
 require (
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/hashicorp/consul/api v1.9.1
+	github.com/kisielk/godepgraph v0.0.0-20190626013829-57a7e4a651a9 // indirect
 	github.com/lestrrat-go/jwx v1.2.4
 	github.com/lib/pq v1.9.0
 	github.com/onsi/ginkgo v1.7.0 // indirect

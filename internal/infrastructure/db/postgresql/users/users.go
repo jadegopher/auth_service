@@ -11,7 +11,7 @@ type userService struct {
 	conn *sql.DB
 }
 
-func New(conn *sql.DB) entities.IUsers {
+func New(conn *sql.DB) *userService {
 	return &userService{conn: conn}
 }
 
