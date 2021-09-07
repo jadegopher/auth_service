@@ -28,7 +28,8 @@ func (s *service) RegisterGuestAccount(ctx context.Context, username string) (st
 		return "", err
 	}
 
-	signedToken, err := s.tokenCreator.Create(
+	// Create token for user
+	token, err := s.tokenCreator.Create(
 		map[string]interface{}{
 			issuedAtField: time.Now().UTC().Unix(),
 			userIDField:   userID,
@@ -40,10 +41,10 @@ func (s *service) RegisterGuestAccount(ctx context.Context, username string) (st
 	}
 
 	// Store token in database
-	if err = s.sessionsDB.Insert(signedToken, userID, tokenLifeTime); err != nil {
+	if err = s.sessionsDB.Insert(token, userID, tokenLifeTime); err != nil {
 		s.logger.Error("error sessionsDB.Insert", zap.Error(err))
 		return "", err
 	}
 
-	return signedToken, nil
+	return token, nil
 }

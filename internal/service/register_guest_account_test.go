@@ -3,6 +3,7 @@ package service
 import (
 	"auth/mocks"
 	"context"
+	"errors"
 	"github.com/golang/mock/gomock"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -26,25 +27,23 @@ func Test_service_RegisterGuestAccount(t *testing.T) {
 		username string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    string
-		wantErr bool
-		mock    func(
+		name string
+		args args
+		mock func(
 			users *mocks.MockIUsers,
 			sessions *mocks.MockISessions,
 			keys *mocks.MockKeyGenerator,
 			token *mocks.MockTokenCreator,
 		)
+		want    string
+		wantErr bool
 	}{
 		{
-			name: "Success: everything is allright",
+			name: "success: everything is allright",
 			args: args{
 				ctx:      context.Background(),
 				username: "somebody was told me",
 			},
-			want:    "signed key",
-			wantErr: false,
 			mock: func(
 				users *mocks.MockIUsers,
 				sessions *mocks.MockISessions,
@@ -71,6 +70,120 @@ func Test_service_RegisterGuestAccount(t *testing.T) {
 
 				sessions.EXPECT().Insert("signed key", int64(1), tokenLifeTime).Return(nil)
 			},
+			want:    "signed key",
+			wantErr: false,
+		},
+		{
+			name: "failed: key generator error",
+			args: args{
+				ctx:      context.Background(),
+				username: "somebody was told me",
+			},
+			mock: func(
+				users *mocks.MockIUsers,
+				sessions *mocks.MockISessions,
+				keys *mocks.MockKeyGenerator,
+				token *mocks.MockTokenCreator,
+			) {
+				keys.EXPECT().Generate().Return(nil, errors.New("some error"))
+			},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name: "failed: user info insert error",
+			args: args{
+				ctx:      context.Background(),
+				username: "somebody was told me",
+			},
+			mock: func(
+				users *mocks.MockIUsers,
+				sessions *mocks.MockISessions,
+				keys *mocks.MockKeyGenerator,
+				token *mocks.MockTokenCreator,
+			) {
+				mockKey := &testMockKey{}
+				keys.EXPECT().Generate().Return(mockKey, nil)
+
+				users.EXPECT().Insert(
+					context.Background(),
+					"somebody was told me",
+					mockKey.String(),
+				).Return(int64(0), errors.New("some error"))
+			},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name: "failed: create token error",
+			args: args{
+				ctx:      context.Background(),
+				username: "somebody was told me",
+			},
+			mock: func(
+				users *mocks.MockIUsers,
+				sessions *mocks.MockISessions,
+				keys *mocks.MockKeyGenerator,
+				token *mocks.MockTokenCreator,
+			) {
+				mockKey := &testMockKey{}
+				keys.EXPECT().Generate().Return(mockKey, nil)
+
+				users.EXPECT().Insert(
+					context.Background(),
+					"somebody was told me",
+					mockKey.String(),
+				).Return(int64(1), nil)
+
+				token.EXPECT().Create(
+					map[string]interface{}{
+						issuedAtField: time.Now().UTC().Unix(),
+						userIDField:   int64(1),
+					},
+					mockKey.Interface(),
+				).Return("", errors.New("some error"))
+			},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name: "failed: insert token error",
+			args: args{
+				ctx:      context.Background(),
+				username: "somebody was told me",
+			},
+			mock: func(
+				users *mocks.MockIUsers,
+				sessions *mocks.MockISessions,
+				keys *mocks.MockKeyGenerator,
+				token *mocks.MockTokenCreator,
+			) {
+				mockKey := &testMockKey{}
+
+				keys.EXPECT().Generate().Return(mockKey, nil)
+
+				users.EXPECT().Insert(
+					context.Background(),
+					"somebody was told me",
+					mockKey.String(),
+				).Return(int64(1), nil)
+
+				token.EXPECT().Create(
+					map[string]interface{}{
+						issuedAtField: time.Now().UTC().Unix(),
+						userIDField:   int64(1),
+					},
+					mockKey.Interface(),
+				).Return("signed key", nil)
+
+				sessions.EXPECT().Insert(
+					"signed key",
+					int64(1),
+					tokenLifeTime,
+				).Return(errors.New("some error"))
+			},
+			want:    "",
+			wantErr: true,
 		},
 	}
 

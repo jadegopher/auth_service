@@ -23,7 +23,7 @@ import (
 )
 
 func main() {
-	termChan := make(chan os.Signal)
+	termChan := make(chan os.Signal, 1)
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
 	ctx, cancelFunc := context.WithCancel(context.Background())
 
@@ -69,8 +69,9 @@ func main() {
 		_ = run(ctx, logger, pConn, rConn, httpServer)
 	}()
 
-	<-termChan
-	cancelFunc()
+	for range termChan {
+		cancelFunc()
+	}
 
 	logger.Info("Starting graceful shutdown")
 }
@@ -92,7 +93,7 @@ func run(
 		return err
 	}
 
-	logger.Info(fmt.Sprintf("Server started"))
+	logger.Info(fmt.Sprintf("Server started on %s", server.Addr))
 
 	if err = server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		logger.Error("Error server.ListenAndServe", zap.Error(err))

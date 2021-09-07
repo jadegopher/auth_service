@@ -3,6 +3,7 @@ package service
 import (
 	"auth/internal/entities"
 	"auth/internal/service/key"
+	"auth/internal/service/key/rsa"
 	"auth/internal/service/token"
 	"go.uber.org/zap"
 )
@@ -13,11 +14,6 @@ type TokenCreator interface {
 
 type KeyGenerator interface {
 	Generate() (key key.IKey, err error)
-}
-
-type IKey interface {
-	String() string
-	Interface() interface{}
 }
 
 type service struct {
@@ -34,6 +30,6 @@ func New(logger *zap.Logger, users entities.IUsers, session entities.ISessions) 
 		usersDB:      users,
 		sessionsDB:   session,
 		tokenCreator: token.New(logger),
-		keyGenerator: key.New(logger),
+		keyGenerator: rsa.NewGenerator(logger),
 	}
 }

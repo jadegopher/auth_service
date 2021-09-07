@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"auth/internal/service"
 	"auth/proto"
 	"context"
 )
@@ -13,14 +12,11 @@ func (h *handlers) CheckToken(
 ) (_ *proto.CheckTokenResponse, err error) {
 	ok, err := h.authService.CheckToken(ctx, req.Token)
 	if err != nil {
-		if err == service.ErrAccountNotFound {
-			return nil, err
-		}
 		return nil, ErrInternalServer
 	}
 
 	if !ok {
-
+		return nil, ErrInvalidToken
 	}
 
 	// TODO: refresh token
