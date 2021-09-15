@@ -22,7 +22,12 @@ import (
 	"syscall"
 )
 
+var (
+	Version = "dev"
+)
+
 func main() {
+	fmt.Println("Version:", Version)
 	termChan := make(chan os.Signal, 1)
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
 	ctx, cancelFunc := context.WithCancel(context.Background())

@@ -20,9 +20,14 @@ func (s *service) RegisterGuestAccount(ctx context.Context, username string) (st
 		return "", err
 	}
 
+	// TODO add key from global environments
+	encryptKey, err := s.AESEncryptor.AESEncrypt([]byte("simplekey"), key.String())
+	if err != nil {
+		return "", err
+	}
 	// Store username and private key to database
 	// TODO add transaction and if some error rollback it
-	userID, err := s.usersDB.Insert(ctx, username, key.String())
+	userID, err := s.usersDB.Insert(ctx, username, encryptKey)
 	if err != nil {
 		s.logger.Error("error usersDB.Insert", zap.Error(err))
 		return "", err
