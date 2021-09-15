@@ -1,14 +1,16 @@
 package service
 
 import (
-	"auth/mocks"
 	"context"
 	"errors"
+	"testing"
+	"time"
+
 	"github.com/golang/mock/gomock"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"testing"
-	"time"
+
+	"auth/mocks"
 )
 
 type testMockKey struct{}
@@ -195,7 +197,7 @@ func Test_service_RegisterGuestAccount(t *testing.T) {
 	tokenCreator := mocks.NewMockTokenCreator(ctrl)
 	keyGenerator := mocks.NewMockKeyGenerator(ctrl)
 
-	s := &service{
+	s := &Service{
 		logger:       zap.New(zapcore.NewNopCore()),
 		usersDB:      usersDB,
 		sessionsDB:   sessionsDB,

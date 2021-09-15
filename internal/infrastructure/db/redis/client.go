@@ -1,9 +1,11 @@
 package redis
 
 import (
-	"auth/internal/entities"
 	"fmt"
+
 	"github.com/go-redis/redis"
+
+	"auth/internal/core/entities"
 )
 
 func NewConnection(database entities.Database) (client *redis.Client, err error) {

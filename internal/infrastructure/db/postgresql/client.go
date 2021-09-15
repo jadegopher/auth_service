@@ -1,10 +1,12 @@
 package postgresql
 
 import (
-	"auth/internal/entities"
 	"database/sql"
 	"fmt"
+
 	_ "github.com/lib/pq"
+
+	"auth/internal/core/entities"
 )
 
 func NewConnection(database entities.Database) (*sql.DB, error) {
