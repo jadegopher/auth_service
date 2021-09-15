@@ -88,7 +88,7 @@ func run(
 	rConn *redis.Client,
 	server *http.Server,
 ) (err error) {
-	authService := service.New(logger, users.New(pConn), sessions.New(rConn))
+	authService := service.New(logger, []byte("simplekey"), users.New(pConn), sessions.New(rConn))
 	handler := handlers.New(authService)
 	mux := runtime.NewServeMux()
 	server.Handler = mux

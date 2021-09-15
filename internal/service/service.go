@@ -17,26 +17,28 @@ type KeyGenerator interface {
 	Generate() (key key.IKey, err error)
 }
 
-type AESEncryptor interface {
-	AESEncrypt(key []byte, plaintext string) (string, error)
+type Encryptor interface {
+	Encrypt(key []byte, plaintext string) (string, error)
 }
 
 type service struct {
 	logger       *zap.Logger
+	cypherKey    []byte
 	usersDB      entities.IUsers
 	sessionsDB   entities.ISessions
 	tokenCreator TokenCreator
 	keyGenerator KeyGenerator
-	AESEncryptor AESEncryptor
+	encryptor    Encryptor
 }
 
-func New(logger *zap.Logger, users entities.IUsers, session entities.ISessions) *service {
+func New(logger *zap.Logger, cypherKey []byte, users entities.IUsers, session entities.ISessions) *service {
 	return &service{
 		logger:       logger,
+		cypherKey:    cypherKey,
 		usersDB:      users,
 		sessionsDB:   session,
 		tokenCreator: token.New(logger),
 		keyGenerator: rsa.NewGenerator(logger),
-		AESEncryptor: aes.NewEncrypt(logger),
+		encryptor:    aes.NewEncrypt(logger),
 	}
 }
