@@ -1,10 +1,11 @@
 package users
 
 import (
-	"auth/internal/entities"
-	"auth/internal/infrastructure/db"
 	"context"
 	"database/sql"
+
+	"auth/internal/core/entities"
+	"auth/internal/infrastructure/db"
 )
 
 type userService struct {

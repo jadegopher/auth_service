@@ -6,16 +6,16 @@ import (
 	"go.uber.org/zap"
 )
 
-type tokenGen struct {
+type Creator struct {
 	logger *zap.Logger
 }
 
-func New(logger *zap.Logger) *tokenGen {
-	return &tokenGen{logger: logger}
+func New(logger *zap.Logger) *Creator {
+	return &Creator{logger: logger}
 }
 
 // Create creates signed jwt token
-func (t *tokenGen) Create(payload map[string]interface{}, key interface{}) (_ string, err error) {
+func (t *Creator) Create(payload map[string]interface{}, key interface{}) (_ string, err error) {
 	// Initialize JWT token and set payload
 	token := jwt.New()
 	for k, v := range payload {

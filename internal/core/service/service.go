@@ -1,11 +1,12 @@
 package service
 
 import (
-	"auth/internal/entities"
-	"auth/internal/service/key"
-	"auth/internal/service/key/rsa"
-	"auth/internal/service/token"
 	"go.uber.org/zap"
+
+	"auth/internal/core/ports"
+	"auth/internal/core/service/encription"
+	"auth/internal/core/service/encription/rsa"
+	"auth/internal/core/service/token"
 )
 
 type TokenCreator interface {
@@ -13,19 +14,19 @@ type TokenCreator interface {
 }
 
 type KeyGenerator interface {
-	Generate() (key key.IKey, err error)
+	Generate() (key encription.IKey, err error)
 }
 
-type service struct {
+type Service struct {
 	logger       *zap.Logger
-	usersDB      entities.IUsers
-	sessionsDB   entities.ISessions
+	usersDB      ports.IUsers
+	sessionsDB   ports.ISessions
 	tokenCreator TokenCreator
 	keyGenerator KeyGenerator
 }
 
-func New(logger *zap.Logger, users entities.IUsers, session entities.ISessions) *service {
-	return &service{
+func New(logger *zap.Logger, users ports.IUsers, session ports.ISessions) *Service {
+	return &Service{
 		logger:       logger,
 		usersDB:      users,
 		sessionsDB:   session,

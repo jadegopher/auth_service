@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
-	"go.uber.org/zap"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 const (
@@ -13,7 +14,7 @@ const (
 )
 
 // RegisterGuestAccount needs for register temp guest accounts
-func (s *service) RegisterGuestAccount(ctx context.Context, username string) (string, error) {
+func (s *Service) RegisterGuestAccount(ctx context.Context, username string) (string, error) {
 	// Generate key
 	key, err := s.keyGenerator.Generate()
 	if err != nil {

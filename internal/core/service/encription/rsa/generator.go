@@ -1,12 +1,14 @@
 package rsa
 
 import (
-	"auth/internal/service/key"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+
 	"go.uber.org/zap"
+
+	"auth/internal/core/service/encription"
 )
 
 const rsaPrivateKey = "RSA PRIVATE KEY"
@@ -28,19 +30,19 @@ func (k *keyContainer) Interface() interface{} {
 	return k.privateKey
 }
 
-type keygen struct {
+type Generator struct {
 	logger *zap.Logger
 }
 
-func NewGenerator(logger *zap.Logger) *keygen {
-	return &keygen{logger: logger}
+func NewGenerator(logger *zap.Logger) *Generator {
+	return &Generator{logger: logger}
 }
 
 // Generate generates rsa key pair
-func (k *keygen) Generate() (key key.IKey, err error) {
+func (g *Generator) Generate() (key encription.IKey, err error) {
 	var privateKey *rsa.PrivateKey
 	if privateKey, err = rsa.GenerateKey(rand.Reader, 2048); err != nil {
-		k.logger.Error("error rsa.GenerateKey", zap.Error(err))
+		g.logger.Error("error rsa.GenerateKey", zap.Error(err))
 		return nil, err
 	}
 

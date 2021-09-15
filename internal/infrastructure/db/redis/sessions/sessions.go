@@ -1,10 +1,12 @@
 package sessions
 
 import (
-	"auth/internal/infrastructure/db"
-	"github.com/go-redis/redis"
 	"strconv"
 	"time"
+
+	"github.com/go-redis/redis"
+
+	"auth/internal/infrastructure/db"
 )
 
 type sessionService struct {

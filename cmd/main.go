@@ -1,30 +1,32 @@
 package main
 
 import (
-	"auth/internal/adapters/handlers"
-	"auth/internal/entities"
-	"auth/internal/infrastructure/db/postgresql"
-	"auth/internal/infrastructure/db/postgresql/users"
-	rDB "auth/internal/infrastructure/db/redis"
-	"auth/internal/infrastructure/db/redis/sessions"
-	"auth/internal/service"
-	"auth/proto"
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/go-redis/redis"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"go.uber.org/zap"
 	"io"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/go-redis/redis"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"go.uber.org/zap"
+
+	"auth/internal/adapters/handlers"
+	"auth/internal/core/entities"
+	"auth/internal/core/service"
+	"auth/internal/infrastructure/db/postgresql"
+	"auth/internal/infrastructure/db/postgresql/users"
+	rDB "auth/internal/infrastructure/db/redis"
+	"auth/internal/infrastructure/db/redis/sessions"
+	"auth/proto"
 )
 
 func main() {
 	termChan := make(chan os.Signal, 1)
-	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
+	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 	ctx, cancelFunc := context.WithCancel(context.Background())
 
 	logger, err := zap.NewProduction()

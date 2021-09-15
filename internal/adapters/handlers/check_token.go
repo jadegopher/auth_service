@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"auth/proto"
 	"context"
+
+	"auth/proto"
 )
 
 // CheckToken TODO functinal tests

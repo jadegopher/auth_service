@@ -1,14 +1,16 @@
 package service
 
 import (
-	"auth/internal/infrastructure/db"
-	"auth/mocks"
 	"context"
 	"errors"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"testing"
+
+	"auth/internal/infrastructure/db"
+	"auth/mocks"
 )
 
 func Test_service_CheckToken(t *testing.T) {
@@ -66,7 +68,7 @@ func Test_service_CheckToken(t *testing.T) {
 
 	sessionsDB := mocks.NewMockISessions(ctrl)
 
-	s := &service{
+	s := &Service{
 		logger:     zap.New(zapcore.NewNopCore()),
 		sessionsDB: sessionsDB,
 	}
